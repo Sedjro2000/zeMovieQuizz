@@ -1,0 +1,11 @@
+type Query {
+  getQuestion: Question
+  
+}
+
+type Question {
+  id: Int!
+  actor: String!
+  moviePoster: String!
+  answer: Boolean!
+}
