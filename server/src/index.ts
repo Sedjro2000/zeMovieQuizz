@@ -1,35 +1,55 @@
-// index.ts
+import "reflect-metadata";
+import express from "express";
+import cors from "cors";
+import { ApolloServer } from "apollo-server-express";
 
-import 'reflect-metadata';
-import { createConnection } from 'typeorm';
-import { ApolloServer } from 'apollo-server-express';
-import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import { buildSchema } from 'type-graphql';
-import { QuestionResolver } from './resolvers';
+import { openDBConnection } from "./utils/database";
+import config from "./constants";
+import { createSchema } from "./utils/createSchema";
 
-dotenv.config();
+// Connexion & 
+const main = async () => {
 
-const app = express();
-const PORT = process.env.PORT || 4000;
+  //Configuration de la Base de Données avec Retry
+  let retries = Number(config.dbConnectionRetries);
+  const retryTimeout = Number(config.timeoutBeforeRetry);
 
-app.use(cors());
+  while (retries) {
+    try {
+      const conn = await openDBConnection();
+      await conn.synchronize();
+      await conn.runMigrations();
+      break;
+    } catch (error) {
+      retries -= 1;
+      console.log(error);
+      console.log(`retries left: ${retries}`);
+      await new Promise((res) => setTimeout(res, retryTimeout));
+    }
+  }
+  //Crée une instance du serveur Express 
+  const app = express();
 
-createConnection()
-  .then(async () => {
-    const schema = await buildSchema({
-      resolvers: [QuestionResolver],
-    });
+  //set up cors with express cors middleware
+  app.use(
+    cors({ origin: [config.frontend_url, config.studio_apollo_graphql_url] })
+  );
+  //Configuration d'Apollo Server :
 
-    const server = new ApolloServer({ schema });
-
-    server.applyMiddleware({ app, path: '/graphql' });
-
-    app.listen(PORT, () => {
-      console.log(`Server is running on http://localhost:${PORT}/graphql`);
-    });
-  })
-  .catch((error) => {
-    console.error('Error connecting to the database:', error);
+  const apolloServer = new ApolloServer({
+    schema: await createSchema(),
   });
+  //Activation d'Apollo Server dans Express :
+
+  await apolloServer.start();
+  apolloServer.applyMiddleware({ app, cors: false });
+  //Démarrage du Serveur Express 
+
+  app.listen(config.port, () => {
+    console.log(`server started on port ${config.port}`);
+  });
+};
+//gestion des errors
+main().catch((err) => {
+  console.log(err);
+});
