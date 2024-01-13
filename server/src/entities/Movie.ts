@@ -9,7 +9,6 @@ import {
 @ObjectType()
 @Entity()
 export class Movie extends BaseEntity {
-    //propriétés de Movies
   @Field(() => Int)
   @PrimaryGeneratedColumn()
   id!: number;
@@ -18,5 +17,12 @@ export class Movie extends BaseEntity {
   @Column()
   title!: string;
 
-  
+  @Field(() => String)
+  @Column()
+  overview!: string;
+
+  @Field(() => String)
+  @Column({ nullable: true })
+  releaseDate?: string;
+
 }
