@@ -1,21 +1,32 @@
-
-/*import { Query, Resolver, Arg } from "type-graphql";
+import { Query, Resolver } from "type-graphql";
 import { Question } from "../entities/Question";
+import { getRandomMovieFromLocalDB, getRandomActorFromLocalDB, checkIfActorPlayedInMovie } from "../utils/questionUtils";
 
 @Resolver()
-export class QuestionsResolver {
-  @Query(() => [Question])
-  async questions(): Promise<Question[]> {
-    // Logique pour récupérer la liste des questions depuis la base de données
-    const questions = await // ... ta logique pour récupérer les questions;
-    return questions || [];
-  }
+export class QuestionResolver {
 
   @Query(() => Question)
-  async question(@Arg("id") id: string): Promise<Question | undefined> {
-    // Logique pour récupérer les détails d'une question spécifique par ID
-    const question = await // ... ta logique pour récupérer une question;
-    return question;
+  async generateQuestion(): Promise<Question> {
+    try {
+      const randomMovie = await getRandomMovieFromLocalDB();
+      const randomActor = await getRandomActorFromLocalDB();
+
+      // Créez une nouvelle instance de Question avec les données fournies
+      const newQuestion = Question.create({
+        movie: randomMovie,
+        actor: randomActor,
+        isCorrect: checkIfActorPlayedInMovie(randomMovie, randomActor),
+      });
+
+      // Sauvegardez la nouvelle instance dans la base de données (si nécessaire)
+      await newQuestion.save();
+
+      // Retournez la nouvelle instance créée
+      return newQuestion;
+    } catch (error) {
+      console.error("Erreur lors de la génération de la question :", error);
+      // Gestion de l'erreur selon vos besoins
+      throw new Error("Erreur lors de la génération de la question");
+    }
   }
 }
-*/

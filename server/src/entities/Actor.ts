@@ -1,10 +1,5 @@
 import { ObjectType, Field, Int } from 'type-graphql';
-import { 
-  BaseEntity, 
-  Entity, 
-  PrimaryGeneratedColumn, 
-  Column 
-} from 'typeorm';
+import { BaseEntity, Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @ObjectType()
 @Entity()
@@ -16,6 +11,4 @@ export class Actor extends BaseEntity {
   @Field(() => String)
   @Column()
   name!: string;
-
-
 }

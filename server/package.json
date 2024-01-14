@@ -6,7 +6,7 @@
   "scripts": {
     "watch": "tsc -w",
     "dev": "cd dist && set NODE_ENV=development && nodemon /index.js",
-    "start": "cd dist && set NODE_ENV=development && node index.js",
+    "start": "cd dist && set NODE_ENV=production && node index.js",
     "build": "tsc",
     "test": "jest -c jest.config.js"
   },

@@ -4,6 +4,7 @@ import { Connection } from "typeorm";
 
 export const openDBConnection = async (drop = false): Promise<Connection> => {
   const name = process.env.NODE_ENV;
+  //const name = "development";
   const connectionOptions = await getConnectionOptions(name);
 
   return createConnection({

@@ -1,6 +1,6 @@
-import { ObjectType, Field, Int,  } from 'type-graphql';
-import { GraphQLBoolean } from 'graphql';
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+// Question.ts
+import { ObjectType, Field, Int } from 'type-graphql';
+import { BaseEntity, Entity, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 import { Movie } from './Movie';
 import { Actor } from './Actor';
 
@@ -11,17 +11,14 @@ export class Question extends BaseEntity {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @ManyToOne(() => Movie)
+  @ManyToOne(() => Movie, { eager: true })
   @Field(() => Movie)
-  film!: Movie;
+  movie!: Movie;
 
-  @ManyToOne(() => Actor)
+  @ManyToOne(() => Actor, { eager: true })
   @Field(() => Actor)
   actor!: Actor;
 
-  @Field(() => GraphQLBoolean)
-  @Column()
+  @Field(() => Boolean)
   isCorrect!: boolean;
-
-  
 }

@@ -1,10 +1,6 @@
 import { ObjectType, Field, Int } from 'type-graphql';
-import { 
-    BaseEntity, 
-    Entity,
-    PrimaryGeneratedColumn, 
-    Column 
-} from 'typeorm';
+import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable } from 'typeorm';
+import { Actor } from './Actor';
 
 @ObjectType()
 @Entity()
@@ -25,4 +21,8 @@ export class Movie extends BaseEntity {
   @Column({ nullable: true })
   releaseDate?: string;
 
+  @Field(() => [Actor], { nullable: true })
+  @ManyToMany(() => Actor, { cascade: true })
+  @JoinTable()
+  actors?: Actor[];
 }

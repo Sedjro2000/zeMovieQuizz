@@ -4,7 +4,6 @@ import { Movie } from "../entities/Movie";
 @Resolver()
 export class MoviesResolver {
 
-
   @Mutation(() => Movie)
   async createMovie(
     @Arg("title") title: string,
@@ -26,13 +25,11 @@ export class MoviesResolver {
     }
   }
   
-  
-  
   @Query(() => [Movie])
   async movies(): Promise<Movie[]> {
     try {
-      // Récupération de la liste des films depuis la base de données
-      const movies = await Movie.find();
+      // Récupération de la liste des films depuis la base de données avec les acteurs associés
+      const movies = await Movie.find({ relations: ['actors'] });
       return movies || [];
     } catch (error) {
       console.error("Erreur lors de la récupération de la liste des films :", error);
@@ -44,13 +41,11 @@ export class MoviesResolver {
   async movie(@Arg("id") id: string): Promise<Movie | undefined> {
     try {
       // Récupération les détails d'un film spécifique par ID depuis la base de données
-      const movie = await Movie.findOne({ where: { id } });
+      const movie = await Movie.findOne({ where: { id }, relations: ['actors'] });
       return movie
     } catch (error) {
       console.error("Erreur lors de la récupération des détails du film :", error);
       return undefined;
     }
   }
-
-
 }
