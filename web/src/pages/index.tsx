@@ -1,13 +1,9 @@
-import type { NextPage } from "next";
-import NextLink from "next/link";
-import Head from "next/head";
-import Image from "next/image";
-import { Flex, Text, Link, Code, Heading, Box } from "@chakra-ui/react";
+import React from 'react'
 
-const Home: NextPage = () => {
+const index = () => {
   return (
-   <h1>Bonjour</h1>
-  );
-};
+    <div>Hello Gamer</div>
+  )
+}
 
-export default Home;
+export default index
