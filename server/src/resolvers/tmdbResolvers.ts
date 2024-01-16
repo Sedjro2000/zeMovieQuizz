@@ -45,11 +45,8 @@ export class TMDBResolvers {
       });
   
       // Extract les acteurs depuis la réponse de l'API TMDB
-      const tmdbActors: Actor[] = response.data.cast.map(async (tmdbActor: any) => {
+      const tmdbActors: Actor[] = response.data.cast.map((tmdbActor: any) => {
         const actorName = tmdbActor.name;
-  
-        // Appel la méthode createActor du ActorsResolver pour stocker l'acteur dans la BD locale
-        await new ActorsResolver().createActor(actorName);
   
         return { name: actorName };
       });
@@ -62,24 +59,41 @@ export class TMDBResolvers {
   }
   
   //envoi des datas recupérées depuis TMDB vers la BD 
- @Mutation(() => Promise<Boolean>)
+  @Mutation(() => Promise<Boolean>)
   async syncTmdbMoviesToDatabase(): Promise<boolean> {
     try {
       const tmdbMovies = await this.tmdbMovies();
-  
+
       for (const tmdbMovie of tmdbMovies) {
-        const { title, overview, releaseDate } = tmdbMovie;
-  
+        const { title, overview, releaseDate, id } = tmdbMovie;
         const releaseDateValue: string = releaseDate || "";
-  
-        // Utilisez le résolveur MoviesResolver actuel (this) pour créer un nouveau film dans la base de données locale
+
+        // Utilise le résolveur MoviesResolver actuel (this) pour créer un nouveau film dans la base de données locale
         await new MoviesResolver().createMovie(title, overview, releaseDateValue);
+
+        // Utilise le résolveur ActorsResolver actuel (this) pour créer les acteurs du film dans la base de données locale
+        await this.syncMovieActorsToDatabase(id.toString());
       }
-  
+
       return true;
     } catch (error) {
       console.error("Erreur lors de la synchronisation des films avec la base de données :", error);
       return false;
+    }
+  }
+
+  private async syncMovieActorsToDatabase(movieId: string): Promise<void> {
+    try {
+      const actors = await this.tmdbMovieActors(movieId);
+
+      for (const actor of actors) {
+        const { name } = actor;
+
+        // Utilise le résolveur ActorsResolver actuel (this) pour créer un nouvel acteur dans la base de données locale
+        await new ActorsResolver().createActor(name);
+      }
+    } catch (error) {
+      console.error("Erreur lors de la synchronisation des acteurs avec la base de données :", error);
     }
   }
 }
