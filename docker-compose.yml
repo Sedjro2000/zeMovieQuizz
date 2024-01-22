@@ -10,6 +10,8 @@ services:
       - starter-net
     volumes:
       - ./server/dbdata:/var/lib/postgresql/data
+    mem_limit: 256m
+    cpus: "0.25"
 
   starter-web:
     build: ./web
@@ -36,7 +38,7 @@ services:
     expose:
       - "4000"
     ports:
-      - "4000:4000"
+      - "4100:4000"
     networks:
       - starter-net
     depends_on:
@@ -44,6 +46,8 @@ services:
     volumes:
       - ./server:/app
     command: /bin/sh "./entrypoint.sh"
+    mem_limit: 256m
+    cpus: "0.25"
 
 networks:
   starter-net:

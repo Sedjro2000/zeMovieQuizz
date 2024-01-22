@@ -37,9 +37,7 @@ you need the followings tool installed in your environment
 
 - cd `server` directory
 - create `dbdata` directory. It is the volume that will be use by Postgres
-- create `.env.development` file and add the following variables (adapt to your environment)
 
-```
 # environment type
 APP_ENV=development
 # database host
