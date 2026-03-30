@@ -1,9 +1,16 @@
-import { InputType, Field } from "type-graphql";
+import { InputType, Field } from 'type-graphql';
 
 @InputType()
-export class UserInput {
+export class QuestionInput {
   @Field(() => String)
-  username!: string;
+  actorId!: string;
+
   @Field(() => String)
-  email!: string;
+  movieId!: string;
+
+  /*@Field(() => Boolean)
+  isSpecial!: boolean;*/
+
 }
+
+
